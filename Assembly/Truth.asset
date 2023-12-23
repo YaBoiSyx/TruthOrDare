@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: Truth
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 205bb6121d62ffe48a413a003a374d01,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: e94bac562f9e8254cb9b151da682787f,
     type: 2}
   udonAssembly: 
   assemblyError: 

@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using TMPro;
 using UdonSharp;
 using UnityEngine;
@@ -20,20 +19,21 @@ namespace AvocadoVR.TOD.Runtime.Manager
                 return _playersList.Length;
             }
         }
-        
+
         [Header("Required Udon")]
         [SerializeField] private GameManager gameManager;
         [Space]
-        [SerializeField] private TextMeshProUGUI playersJoined;
-        
+
         [SerializeField] private GameObject joinButton;
         [SerializeField] private GameObject leaveButton;
-
+        [Space]
+        public GameObject[] templates;
+        private TextMeshProUGUI[] _templateNames;
         #region Variables & Data
-            
+
         // Synced Data
         [UdonSynced] private int[] _players;
-        
+
         // Local Data
         private VRCPlayerApi _player;
         private bool _isRateLimited;
@@ -42,38 +42,45 @@ namespace AvocadoVR.TOD.Runtime.Manager
 
         #endregion
 
-       void Start()
-       {
-           _players = new[] { -1 };
-           _player = Networking.LocalPlayer;
+        void Start()
+        {
+            _templateNames = new TextMeshProUGUI[templates.Length];
+
+            for (int i = 0; i < templates.Length; i++)
+            {
+                _templateNames[i] = templates[i].GetComponentInChildren<TextMeshProUGUI>();
+            }
+
+            _players = new[] { -1 };
+            _player = Networking.LocalPlayer;
         }
-       
-       public void RateLimit() => _isRateLimited = false;
 
-       public void GetAllPlayers()
-       {
-           VRCPlayerApi[] players = new VRCPlayerApi[VRCPlayerApi.GetPlayerCount()];
-           VRCPlayerApi.GetPlayers(players);
-           
-           int[] playerIDs = new int[VRCPlayerApi.GetPlayerCount()];
+        public void RateLimit() => _isRateLimited = false;
 
-           for (var i = 0; i < players.Length; i++)
-           {
-               playerIDs[i] = players[i].playerId;
-           }
+        public void GetAllPlayers()
+        {
+            VRCPlayerApi[] players = new VRCPlayerApi[VRCPlayerApi.GetPlayerCount()];
+            VRCPlayerApi.GetPlayers(players);
 
-           _players = playerIDs;
-           _UpdateList();
-           _UpdatePlayers();
-       }
+            int[] playerIDs = new int[VRCPlayerApi.GetPlayerCount()];
 
-       public string GetRandomPlayer()
-       {
-           int randomIndex = Random.Range(0, _playersList.Length);
+            for (var i = 0; i < players.Length; i++)
+            {
+                playerIDs[i] = players[i].playerId;
+            }
 
-           return VRCPlayerApi.GetPlayerById(_playersList[randomIndex]).displayName;
-       }
-       
+            _players = playerIDs;
+            _UpdateList();
+            _UpdatePlayers();
+        }
+
+        public string GetRandomPlayer()
+        {
+            int randomIndex = Random.Range(0, _playersList.Length);
+
+            return VRCPlayerApi.GetPlayerById(_playersList[randomIndex]).displayName;
+        }
+
         public void Join()
         {
             if (!Utilities.IsValid(_player) || _isRateLimited) return;
@@ -83,9 +90,9 @@ namespace AvocadoVR.TOD.Runtime.Manager
 
             joinButton.SetActive(false);
             leaveButton.SetActive(true);
-            
+
             SendCustomEventDelayedSeconds(nameof(RateLimit), 5);
-            
+
             Add(_player.playerId);
         }
 
@@ -95,12 +102,12 @@ namespace AvocadoVR.TOD.Runtime.Manager
             Networking.SetOwner(_player, gameObject);
             _hasJoined = false;
             _isRateLimited = true;
-            
+
             leaveButton.SetActive(false);
             joinButton.SetActive(true);
-            
+
             SendCustomEventDelayedSeconds(nameof(RateLimit), 5);
-            
+
             Remove(_player.playerId);
         }
 
@@ -109,9 +116,9 @@ namespace AvocadoVR.TOD.Runtime.Manager
             if (_players.Length == 1) return;
 
             int[] _temp = new int[_players.Length - 1];
-    
+
             int j = 0;
-    
+
             for (int i = 0; i < _players.Length; i++)
             {
                 if (_players[i] == _player.playerId) continue;
@@ -126,18 +133,26 @@ namespace AvocadoVR.TOD.Runtime.Manager
         {
             if (_players[0] == -1)
             {
-                playersJoined.text = "";
+                foreach (GameObject Template in templates)
+                {
+                    Template.SetActive(false);
+                }
                 return;
             }
-            
-            playersJoined.text = "";
-            
+
+            foreach (GameObject Template in templates)
+            {
+                Template.SetActive(false);
+            }
+
             for (int i = 0; i < _players.Length; i++)
             {
-                playersJoined.text += "\n" + i + _players[i].ToString();
+                string playerName = _player.displayName;
+                if (string.IsNullOrEmpty(playerName)) continue;
+
+                _templateNames[i].text = playerName;
+                templates[i].SetActive(true);
             }
-            
-            Debug.Log(_players.Length);
         }
 
         public override void OnDeserialization()
@@ -171,7 +186,7 @@ namespace AvocadoVR.TOD.Runtime.Manager
                 Array.Copy(_players, _temp, _players.Length);
 
                 _temp[_temp.Length - 1] = id;
-            
+
                 _players = _temp;
                 RequestSerialization();
                 _UpdateList();
@@ -192,10 +207,10 @@ namespace AvocadoVR.TOD.Runtime.Manager
             {
                 int[] _temp = new int[_players.Length - 1];
                 int g = 0;
-                
+
                 for (int i = 0; i < _players.Length; i++)
                 {
-                    
+
                     if (_players[i] == id) continue;
                     _temp[g++] = _players[i];
                 }
