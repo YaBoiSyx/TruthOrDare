@@ -12,49 +12,51 @@ using VRC.Udon;
 using VRC.Udon.Common.Interfaces;
 using Random = UnityEngine.Random;
 
-namespace AvocadoVR.TOD.Runtime.Manager
+namespace Lastation.TOD
 {
     
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
     public class GameManager : UdonSharpBehaviour
     {
         [Header("Required Udon")]
-        [SerializeField] private CategoriesManager categoriesManager;
+        [SerializeField] private URLLoader categoriesManager;
         [SerializeField] private PlayerManager playerManager;
-        [SerializeField] private PlaceholderManager placeholderManager;
+        [SerializeField] private string playerPlaceholder = "<player>";
+
         [Space] 
+        
         [SerializeField] private VRCUrl defaultURL;
         [Space]
         [Header("Game Components")]
-        [SerializeField] private TextMeshProUGUI question;
-        [SerializeField] private TextMeshProUGUI player;
+        [SerializeField] private TextMeshProUGUI questionDisplayedText;
+        [SerializeField] private TextMeshProUGUI playerDisplayedText;
         [Space]
         [Header("Game Settings")] 
         public bool usePlaceholders;
-        public bool getAllPlayers;
 
         #region Variables & Data
 
         // Truth & Dares
-        [UdonSynced] private string[] _truths = new[] { "null" };
-        [UdonSynced] private string[] _dares = new[] { "null" };
-        [UdonSynced] private string[] _pTruths = new[] { "null" };
-        [UdonSynced] private string[] _pDares = new[] { "null" };
+        private string[] _truths = new[] { "null" };
+        private string[] _dares = new[] { "null" };
+        private string[] _pTruths = new[] { "null" };
+        private string[] _pDares = new[] { "null" };
 
         // Custom Set Logic
-        [UdonSynced] private string _customSetName;
-        [UdonSynced] private string _customSetBy;
+        private string _customSetName;
+        private string _customSetBy;
 
         // Game Logic & Data
-        [UdonSynced] private int _type;
-        [UdonSynced] private string _question;
-        [UdonSynced] private int _id;
-        [UdonSynced] private int _playerID;
-
         private VRCPlayerApi _player;
+        private int _type;
+        private int _id;
+        private string _question;
+        [UdonSynced] public int _playerID;
         
-        #endregion
         
+
+        #endregion Variables & Data
+
 
         void Start()
         {
@@ -62,11 +64,8 @@ namespace AvocadoVR.TOD.Runtime.Manager
             VRCStringDownloader.LoadUrl(defaultURL, (IUdonEventReceiver)this);
         }
 
-        public void LoadURL(VRCUrl url)
-        {
-            VRCStringDownloader.LoadUrl(url, (IUdonEventReceiver)this);
-        }
 
+        #region Truth
         public void Truth()
         {
             Networking.SetOwner(_player, gameObject);
@@ -96,6 +95,7 @@ namespace AvocadoVR.TOD.Runtime.Manager
             }
             RequestSerialization();
         }
+        #endregion Truth
 
         public void Dare()
         {
@@ -142,56 +142,30 @@ namespace AvocadoVR.TOD.Runtime.Manager
 
             return false;
         }
-        
-        public override void OnStringLoadSuccess(IVRCStringDownload result)
-        {
-            string[] sections = result.Result.Split(new string[] { "#name=", "#by=", "#type=truth_reg", "#type=truth_ph", "#type=dare_reg", "#type=dare_ph" }, StringSplitOptions.RemoveEmptyEntries);
-            
-            _customSetName = sections[0];
-            _customSetBy = sections[1];
-            _truths = sections[2].Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            _pTruths = sections[3].Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            _dares = sections[4].Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            _pDares = sections[5].Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-
-            _type = 5;
-            RequestSerialization();
-            _Update();
-        }
-        
-        public override void OnStringLoadError(IVRCStringDownload result)
-        {
-            
-        }
 
         public void _Update()
         {
-            if (_type != 5) player.text = VRCPlayerApi.GetPlayerById(_playerID).displayName;
+            if (_type != 5) playerDisplayedText.text = VRCPlayerApi.GetPlayerById(_playerID).displayName;
             
             switch (_type)
             {
                 case 1:
                     _question = _truths[_id];
-                    question.text = _truths[_id];
                     break;
                 case 2:
                     _question = _pTruths[_id];
-                    _question.Replace(placeholderManager.playerPlaceholder, playerManager.GetRandomPlayer());
-                    question.text = _pTruths[_id];
+                    _question.Replace(playerPlaceholder, playerManager.GetRandomPlayer());
                     break;
                 case 3:
                     _question = _dares[_id];
-                    question.text = _dares[_id];
                     break;
                 case 4:
                     _question = _pDares[_id];
-                    _question.Replace(placeholderManager.playerPlaceholder, playerManager.GetRandomPlayer());
-                    question.text = _pDares[_id];
-                    break;
-                case 5:
-                    categoriesManager.customSet.text = $"{_customSetName}" + " By " + $"{_customSetBy}";
+                    _question.Replace(playerPlaceholder, playerManager.GetRandomPlayer());
                     break;
             }
+            questionDisplayedText.text = _question;
+            RequestSerialization();
         }
 
         public override void OnDeserialization()

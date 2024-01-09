@@ -1,11 +1,9 @@
-﻿
-using AvocadoVR.TOD.Runtime.Manager;
-using UdonSharp;
+﻿using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon;
 
-namespace AvocadoVR.TOD.Runtime.Interact
+namespace Lastation.TOD
 {
     public class Truth : UdonSharpBehaviour
     {

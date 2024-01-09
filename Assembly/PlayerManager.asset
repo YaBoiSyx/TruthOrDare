@@ -21,7 +21,7 @@ MonoBehaviour:
   compiledVersion: 2
   behaviourSyncMode: 0
   hasInteractEvent: 0
-  scriptID: 565073974106462640
+  scriptID: -2011944995372395554
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
@@ -62,7 +62,7 @@ MonoBehaviour:
       Data: 3|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: AvocadoVR.TOD.Runtime.Manager.GameManager, Assembly-CSharp
+      Data: Lastation.TOD.GameManager, Assembly-CSharp
     - Name: 
       Entry: 8
       Data: 

@@ -4,10 +4,10 @@ using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon;
 
-namespace AvocadoVR.TOD.Runtime.Manager
+namespace Lastation.TOD
 {
     public class PlaceholderManager : UdonSharpBehaviour
     {
-        public string playerPlaceholder = "%player%";
+        public string playerPlaceholder = "<playerDisplayedText>";
     }
 }

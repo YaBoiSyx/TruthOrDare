@@ -8,7 +8,7 @@ using VRC.Udon;
 using VRC.Udon.Common.Interfaces;
 using Random = UnityEngine.Random;
 
-namespace AvocadoVR.TOD.Runtime.Manager
+namespace Lastation.TOD
 {
     public class PlayerManager : UdonSharpBehaviour
     {
