@@ -6,6 +6,7 @@ using VRC.Udon;
 
 namespace Lastation.TOD
 {
+    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class TODSetContainer : UdonSharpBehaviour
     {
         public string setName; //set in inspector to gen the button name

@@ -10,6 +10,7 @@ using Random = UnityEngine.Random;
 
 namespace Lastation.TOD
 {
+    [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
     public class PlayerManager : UdonSharpBehaviour
     {
         public int PlayerCount
@@ -166,6 +167,11 @@ namespace Lastation.TOD
                 _UpdateList();
                 _UpdatePlayers();
             }
+        }
+
+        public override void OnPlayerJoined(VRCPlayerApi player)
+        {
+            RequestSerialization();
         }
 
         #region Add & Remove

@@ -9,14 +9,23 @@ using VRC.Udon;
 
 namespace Lastation.TOD
 {
+    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class SetButton : UdonSharpBehaviour
     {
         public URLLoader UIController;
         public TODSetContainer assignedSet;
         public TextMeshProUGUI buttonText;
 
+        private VRCPlayerApi _player;
+
+        public void Start()
+        {
+            _player = Networking.LocalPlayer;
+        }
+
         public void OnClicked()
         {
+            if (UIController._IsMasterLocked && !_player.isMaster) return;
             UIController.LoadSetDataContainer(assignedSet);
             //loads the set data for this button instance into the UI
         }

@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using TMPro;
 using UdonSharp;
 using UnityEngine;
@@ -21,19 +22,20 @@ namespace Lastation.TOD
         [Space]
 
         [Header("Game Instance")]
-        private GameManager gameManager;
+        public GameManager gameManager;
 
         [Space]
 
         [Header("Button Instancing")]
         [SerializeField] private Transform _buttonParent;
         [SerializeField] private GameObject _buttonPrefab;
-        [SerializeField] private Button[] _SetButtons;
+        private Button[] _SetButtons;
 
         [Space]
 
         [Header("URL Input")]
-        private VRCUrlInputField _urlInputField;
+        [SerializeField] private VRCUrl defaultURL;
+        [SerializeField] private VRCUrlInputField _urlInputField;
 
         [Space]
 
@@ -43,11 +45,12 @@ namespace Lastation.TOD
 
         //Private & Synced Variables
         private VRCPlayerApi _player;
-        [UdonSynced] private bool _IsMasterLocked = true;
+        [UdonSynced] public bool _IsMasterLocked = true;
         [UdonSynced] private VRCUrl _tempUrl;
+
         #endregion Variables & Data
 
-        #region Start & Serialization
+        #region Start, Master & Serialization
         void Start()
         {
             _player = Networking.LocalPlayer;
@@ -59,13 +62,24 @@ namespace Lastation.TOD
                 _SetButtons[i] = _setContainers[i].SetButton.GetComponent<Button>();
             }
             #endregion Button Caching
+            VRCStringDownloader.LoadUrl(defaultURL, (IUdonEventReceiver)this);
+        }
+
+        public override void OnPlayerJoined(VRCPlayerApi player)
+        {
+            RequestSerialization();
         }
 
         public override void OnDeserialization()
         {
             LoadURL(_tempUrl);
         }
-        #endregion Start & Serialization
+
+        private void MasterSwitch()
+        {
+            _IsMasterLocked = !_IsMasterLocked;
+        }
+        #endregion Start, Master & Serialization
 
         #region Button Generation
         public void GenerateButtons()
@@ -117,16 +131,27 @@ namespace Lastation.TOD
 
             if (VRCJson.TryDeserializeFromJson(json, out DataToken result))
             {
-                Debug.Log($"Successfully deserialized as a list with {result.DataDictionary.Count} items.");
-
+                //Currently a dictionaty with 6 items
                 result.DataDictionary.TryGetValue("SetName", out DataToken name);
                 result.DataDictionary.TryGetValue("SetBy", out DataToken setBy);
                 result.DataDictionary.TryGetValue("Truths", out DataToken truths);
-                result.DataDictionary.TryGetValue("Dares", out DataToken dares);
                 result.DataDictionary.TryGetValue("Player_Truths", out DataToken pTruths);
+                result.DataDictionary.TryGetValue("Dares", out DataToken dares);
                 result.DataDictionary.TryGetValue("Player_Dares", out DataToken pDares);
 
-                //Import these values to the game manager and the URLLoader UI
+
+                _setname.text = name.String;
+                _setby.text = setBy.String;
+
+                //all tokens below are datalists of x items
+                gameManager._truths = truths.DataList;
+                gameManager._pTruths = pTruths.DataList;
+                gameManager._dares = dares.DataList;
+                gameManager._pDares = pDares.DataList;
+
+                gameManager.playerDisplayedText.text =  name.String;
+                gameManager.questionDisplayedText.text = "By " + setBy.String;
+
                 SendCustomEventDelayedSeconds(nameof(DisableRateLimit), 10);
             }
 
@@ -134,6 +159,8 @@ namespace Lastation.TOD
 
         public override void OnStringLoadError(IVRCStringDownload WebRequest)
         {
+            gameManager.playerDisplayedText.text = "Error " + WebRequest.ErrorCode.ToString();
+            gameManager.questionDisplayedText.text = WebRequest.Error;
             SendCustomEventDelayedSeconds(nameof(DisableRateLimit), 10);
         }
         #endregion String Load Events
