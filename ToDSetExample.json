@@ -8,22 +8,22 @@
         "What's your biggest fantasy? Anyone who finds this weird must drink",
         "Why do you play VRC?",
         "Do you have any fetishes? Anyone with the same fetish drinks",
-        "Pineapple on pizza?"
-        "What's something you're glad your family doesn't know about you?",
+        "Pineapple on pizza?",
+        "Whats something youre glad your family doesnt know about you?",
         "What's your relationship dealbreaker?",
         "What are your thoughts on polyamory?",
         "What's the WORST intimate experience you've ever had? If its with someone here, drink with them",
-        "What's the BEST intimate experience you've ever had? If its with someone here, drink with them"
+        "What's the BEST intimate experience you've ever had? If its with someone here, drink with them",
         "Who would you like to kiss in this room? Make them drink",
         "Have you ever said something you regret about someone in this room? Say it out loud or take a drink",
         "Where's the weirdest place you've had sex? Anyone whos also had sex here must drink",
         "Why did your last relationship break down?",
-        "What's your biggest turn on?"
+        "What's your biggest turn on?",
         "What gives you the ick?",
         "If you could swap bodies with anyone in the room for a day, who would it be and why? Make them drink as you explain",
         "What was your first impression of the person sitting to your right?",
         "Who in this room would be the worst person to date? Make them drink while you explain why",
-        "Have you ever had a sex dream about one of your friends? Either share who or take 2 drinks"
+        "Have you ever had a sex dream about one of your friends? Either share who or take 2 drinks",
         "Have you ever accidentally sent a sext to the wrong person?",
         "Have you ever faked an orgasm?",
         "Who in this room would you want a threesome with? All three of you take a drink together",
@@ -88,15 +88,15 @@
         "Take a drink for how many Ex's you have irl and online",
         "Sell <player> to the room if someone will buy them give 5 if no one will take 5",
         "End every sentence with Mommy, Daddy, Sir or Mistress untill your next turn",
-        "Message someone you don't like "I miss you"",
+        "Message someone you don't like I miss you"
     ],
     "Player_Dares": [
         "Poke <player>'s nose.",
         "Sit next to <player>.",
-        "Change your status to "<Ex's name> was right"",
-        "Change your status to "<name> is better than <name>"",
+        "Change your status to <Ex's name> was right",
+        "Change your status to <name> is better than <name>",
         "<player> Bark. Right now. You wont",
         "Imitate the <player> to your right",
-        "You are now <players> pet obey them untill your next turn",
+        "You are now <players> pet obey them untill your next turn"
     ]
 }
